@@ -154,7 +154,12 @@ public class ZByteView:UIView,WKNavigationDelegate
         loaderView.showLoader();
         
         //Perform request
-        webview.load(URLRequest(url: URL(string: ZByteViewConfiguration.urlStr)!));
+        loadURLRequestWithURL(url: URL(string: ZByteViewConfiguration.urlStr)!)
+        
+    }
+    private func loadURLRequestWithURL(url:URL)
+    {
+        webview.load(URLRequest(url:url));
     }
     
     //web url request finish success
