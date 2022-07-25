@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import WebKit
+import UserNotifications
 
 
 class ZByteSDKManager:NSObject
@@ -15,7 +16,29 @@ class ZByteSDKManager:NSObject
     static var isProducion = true;
     static var dLSurveyId = ""
     static var dLNftId = ""
-
+    
+    static func handlePushNotificationTap(response: UNNotificationResponse)
+    {
+        let userInfo = response.notification.request.content.userInfo
+       print(userInfo);
+           var surveyID = "";
+           var nftId = "";
+           
+           if let tSurveyId = userInfo["survey_id"] as? String
+           {
+               surveyID = tSurveyId;
+           }
+           if let tNftId = userInfo["nftId"] as? String
+           {
+               nftId = tNftId;
+           }
+        
+            dLSurveyId = surveyID;
+            dLNftId = nftId;
+        
+           print("DEBUG : Payload received");
+           print("DEBUG : nftId=\(nftId),surveyID=\(surveyID)");
+    }
 }
 
 //configuration class
