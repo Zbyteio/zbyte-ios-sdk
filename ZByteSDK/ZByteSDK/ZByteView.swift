@@ -13,7 +13,9 @@ import WebKit
 class ZByteSDKManager:NSObject
 {
     static var isProducion = true;
-    
+    static var dLSurveyId = ""
+    static var dLNftId = ""
+
 }
 
 //configuration class
@@ -93,11 +95,23 @@ fileprivate class ZByteLoaderView:UIView
 
 }
 
+//ZByteView Protocols
+protocol ZByteViewDelegate {
+    
+    func onUserInfoReceived(data: String)
+//    optional func onAccessTokenReceived(token:String)
+    
+}
+
+
 //ZByteView Custom class
 public class ZByteView:UIView,WKNavigationDelegate
 {
     private var webview:WKWebView = WKWebView();
     private var loaderView:ZByteLoaderView = ZByteLoaderView()
+    private var userId:String? = nil;
+    private var accessToken:String? = nil;
+    var delegate:ZByteViewDelegate? = nil;
     
     //initialising
     override init(frame: CGRect) {
@@ -144,7 +158,7 @@ public class ZByteView:UIView,WKNavigationDelegate
         
         //Load url
         self.loadLoadURL()
-        
+        fetchUserId();
     }
     
     //web url request
@@ -167,6 +181,192 @@ public class ZByteView:UIView,WKNavigationDelegate
     {
         //
         loaderView.hideLoader();
+    }
+    
+    @objc func fetchUserId()
+    {
+        if let url = webview.url
+        {
+            let urlStr = url.absoluteString
+            
+            if(urlStr == "https://apptest.zbyte.io/mynft")
+            {
+                
+                print("url -> \(urlStr)")
+                
+                let scriptNew="localStorage.getItem(\"account\");";
+                webview.evaluateJavaScript(scriptNew) { (reply, error) in
+                    
+                    if let replyStr = reply as? String
+                    {
+                        print("Received");
+                        print("output is : \n")
+                        print(reply);
+                        print(error);
+                        
+                        if let jsonDict = replyStr.toJSON() as? NSDictionary
+                        {
+                            if let connectedAccount = jsonDict.value(forKey: "connectedAccount") as? NSDictionary
+                            {
+                                if let loginnOptions = connectedAccount.value(forKey: "loginOptions") as? NSDictionary
+                                {
+                                    if let userIdReceived = loginnOptions.value(forKey: "id") as? Int64
+                                    {
+                                        self.fetchToken();
+                                        self.userId = "\(userIdReceived)";
+                                        
+                                        if(ZByteSDKManager.dLNftId != "" && ZByteSDKManager.dLSurveyId != "")
+                                        {
+                                            
+                                            let urlStr = "\(ZByteViewConfiguration.urlStr)/mynft?nft_id=\(ZByteSDKManager.dLNftId)&survey_id=\(ZByteSDKManager.dLSurveyId)";
+                                            self.loadURLRequestWithURL(url: URL(string: urlStr)!)
+                                            
+                                            ZByteSDKManager.dLNftId = ""
+                                            ZByteSDKManager.dLSurveyId = ""
+                                            
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        print("error is : \n")
+                        print(reply);
+                    }
+                    
+                }
+            }
+            
+        }
+        if(self.userId == nil)
+        {
+            self.perform(#selector(fetchUserId), with: nil, afterDelay: 1.0);
+        }
+    }
+    func fetchToken()
+    {
+        if(self.accessToken == nil)
+        {
+            webview.getCookies(for: webview.url!.host) { data in
+                
+                print("=========================================")
+                print("\(self.webview.url!.absoluteString)")
+                print(data)
+                
+                if let tokenDict = data["accessToken"] as? NSDictionary
+                {
+                    if let value = tokenDict["Value"] as? String
+                    {
+                        self.accessToken = value;
+                        print("Token = \(value)");
+                        self.requestForEmailAddress();
+                    }
+                    
+                }
+                
+            }
+        }
+        
+        
+        
+        
+    }
+    func requestForEmailAddress()
+    {
+        if(self.accessToken != nil && self.userId != nil)
+        {
+            
+            self.callAPI { status, result, errorString in
+                
+                if(status == true)
+                {
+                    if let resultRec = result
+                    {
+                        if let dataDict = resultRec["data"] as? NSDictionary
+                        {
+                            if let email = dataDict["email"] as? String
+                            {
+                                DispatchQueue.main.async {
+                                    
+                                    self.delegate?.onUserInfoReceived(data: email);
+                                    
+                                }
+                                
+                            }
+                        }
+                    }
+                    
+                }
+                print("\(result)");
+            }
+            
+        }
+    }
+    
+    
+    func callAPI(completion: @escaping (_ status:Bool,_ result: NSDictionary?, _ errorString:String?) -> Void)
+    {
+        let mainURL = "\(ZByteViewConfiguration.apiUrlStr)getUserProfile";
+        
+        let session = URLSession.shared
+        let url = URL(string: mainURL)!
+        print("callinng result");
+        
+        var request = URLRequest(url: url);
+        request.httpMethod = "POST";
+        
+        let parameters = "{\n    \"userId\": \(self.userId!)\n}"
+        let postData = parameters.data(using: .utf8)
+        
+        request.addValue("Bearer \(self.accessToken!)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        request.httpBody = postData
+        
+        
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            
+            print("Got result");
+            if error != nil || data == nil {
+                print("Client error!")
+                completion(false,nil,"Client Error");
+                return
+            }
+            
+            //                guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
+            //                    print("Server error!")
+            //                    completion(false,nil,"Server error!")
+            //
+            //                    return
+            //                }
+            
+            //            guard let mime = response.mimeType, mime == "application/json" else {
+            //                print("Wrong MIME type!")
+            //                completion(false,nil)
+            //
+            //                return
+            //            }
+            
+            do {
+                let json = try JSONSerialization.jsonObject(with: data!, options: []) as! NSDictionary
+                
+                print("\(json)");
+                
+                completion(true,json,nil)
+                
+            } catch {
+                completion(false,nil,"Parse error!")
+                
+                print("JSON error: (error.localizedDescription)")
+            }
+        }
+        
+        task.resume()
     }
     
     //web url request finish fail
