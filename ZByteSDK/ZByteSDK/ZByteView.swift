@@ -9,11 +9,48 @@ import Foundation
 import UIKit
 import WebKit
 
+
+class ZByteSDKManager:NSObject
+{
+    static var isProducion = true;
+    
+}
+
 //configuration class
 fileprivate class ZByteViewConfiguration
 {
-    static let urlStr = "https://app.zbyte.io/"
     static let userAgent = "Version/8.0.2 Safari/600.2.5"
+    static let WEB_URL_PROD="https://app.zbyte.io/"
+    static let WEB_URL_TEST="https://apptest.zbyte.io/"
+    static let API_URL_PROD="https://auth.zbyte.io/"
+    static let API_URL_TEST="https://authtest.zbyte.io/"
+    
+    
+    static var urlStr:String {
+        get {
+            if(ZByteSDKManager.isProducion==false)
+            {
+                return ZByteViewConfiguration.WEB_URL_TEST
+            }
+            else
+            {
+                return ZByteViewConfiguration.WEB_URL_PROD
+            }
+        }
+    }
+    static var apiUrlStr:String {
+        get {
+            if(ZByteSDKManager.isProducion==false)
+            {
+                return ZByteViewConfiguration.API_URL_TEST
+            }
+            else
+            {
+                return ZByteViewConfiguration.API_URL_PROD
+            }
+        }
+        
+    }
 }
 
 
