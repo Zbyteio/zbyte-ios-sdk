@@ -11,13 +11,13 @@ import WebKit
 import UserNotifications
 
 
-class ZByteSDKManager:NSObject
+public class ZByteSDKManager:NSObject
 {
-    static var isProducion = true;
+    public static var isProducion = true;
     static var dLSurveyId = ""
     static var dLNftId = ""
     
-    static func handlePushNotificationTap(response: UNNotificationResponse)
+    public static func handlePushNotificationTap(response: UNNotificationResponse)
     {
         let userInfo = response.notification.request.content.userInfo
        print(userInfo);
@@ -119,7 +119,7 @@ fileprivate class ZByteLoaderView:UIView
 }
 
 //ZByteView Protocols
-protocol ZByteViewDelegate {
+public protocol ZByteViewDelegate {
     
     func onUserInfoReceived(data: String)
 //    optional func onAccessTokenReceived(token:String)
@@ -134,7 +134,7 @@ public class ZByteView:UIView,WKNavigationDelegate
     private var loaderView:ZByteLoaderView = ZByteLoaderView()
     private var userId:String? = nil;
     private var accessToken:String? = nil;
-    var delegate:ZByteViewDelegate? = nil;
+    public var delegate:ZByteViewDelegate? = nil;
     
     //initialising
     override init(frame: CGRect) {
