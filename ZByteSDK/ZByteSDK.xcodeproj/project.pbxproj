@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A60E5ED28516703005D7A4D /* ZByteSDK.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0A60E5EC28516703005D7A4D /* ZByteSDK.docc */; };
-		0A60E5EE28516703005D7A4D /* ZByteSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A60E5EB28516703005D7A4D /* ZByteSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		0A60E5F52851672A005D7A4D /* ZByteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A60E5F42851672A005D7A4D /* ZByteView.swift */; };
+		0A60E5ED28516703005D7A4D /* ZbyteSDK.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0A60E5EC28516703005D7A4D /* ZbyteSDK.docc */; };
+		0A60E5EE28516703005D7A4D /* ZbyteSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A60E5EB28516703005D7A4D /* ZbyteSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0A60E5F52851672A005D7A4D /* ZbyteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A60E5F42851672A005D7A4D /* ZbyteView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0A60E5E828516703005D7A4D /* ZByteSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZByteSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		0A60E5EB28516703005D7A4D /* ZByteSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZByteSDK.h; sourceTree = "<group>"; };
-		0A60E5EC28516703005D7A4D /* ZByteSDK.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = ZByteSDK.docc; sourceTree = "<group>"; };
-		0A60E5F42851672A005D7A4D /* ZByteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZByteView.swift; sourceTree = "<group>"; };
+		0A60E5E828516703005D7A4D /* ZbyteSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZbyteSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A60E5EB28516703005D7A4D /* ZbyteSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZbyteSDK.h; sourceTree = "<group>"; };
+		0A60E5EC28516703005D7A4D /* ZbyteSDK.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = ZbyteSDK.docc; sourceTree = "<group>"; };
+		0A60E5F42851672A005D7A4D /* ZbyteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZbyteView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +41,7 @@
 		0A60E5E928516703005D7A4D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0A60E5E828516703005D7A4D /* ZByteSDK.framework */,
+				0A60E5E828516703005D7A4D /* ZbyteSDK.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -49,9 +49,9 @@
 		0A60E5EA28516703005D7A4D /* ZByteSDK */ = {
 			isa = PBXGroup;
 			children = (
-				0A60E5F42851672A005D7A4D /* ZByteView.swift */,
-				0A60E5EB28516703005D7A4D /* ZByteSDK.h */,
-				0A60E5EC28516703005D7A4D /* ZByteSDK.docc */,
+				0A60E5F42851672A005D7A4D /* ZbyteView.swift */,
+				0A60E5EB28516703005D7A4D /* ZbyteSDK.h */,
+				0A60E5EC28516703005D7A4D /* ZbyteSDK.docc */,
 			);
 			path = ZByteSDK;
 			sourceTree = "<group>";
@@ -63,16 +63,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A60E5EE28516703005D7A4D /* ZByteSDK.h in Headers */,
+				0A60E5EE28516703005D7A4D /* ZbyteSDK.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		0A60E5E728516703005D7A4D /* ZByteSDK */ = {
+		0A60E5E728516703005D7A4D /* ZbyteSDK */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0A60E5F128516703005D7A4D /* Build configuration list for PBXNativeTarget "ZByteSDK" */;
+			buildConfigurationList = 0A60E5F128516703005D7A4D /* Build configuration list for PBXNativeTarget "ZbyteSDK" */;
 			buildPhases = (
 				0A60E5E328516703005D7A4D /* Headers */,
 				0A60E5E428516703005D7A4D /* Sources */,
@@ -83,9 +83,9 @@
 			);
 			dependencies = (
 			);
-			name = ZByteSDK;
+			name = ZbyteSDK;
 			productName = ZByteSDK;
-			productReference = 0A60E5E828516703005D7A4D /* ZByteSDK.framework */;
+			productReference = 0A60E5E828516703005D7A4D /* ZbyteSDK.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -102,7 +102,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 0A60E5E228516703005D7A4D /* Build configuration list for PBXProject "ZByteSDK" */;
+			buildConfigurationList = 0A60E5E228516703005D7A4D /* Build configuration list for PBXProject "ZbyteSDK" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -115,7 +115,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0A60E5E728516703005D7A4D /* ZByteSDK */,
+				0A60E5E728516703005D7A4D /* ZbyteSDK */,
 			);
 		};
 /* End PBXProject section */
@@ -135,8 +135,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A60E5ED28516703005D7A4D /* ZByteSDK.docc in Sources */,
-				0A60E5F52851672A005D7A4D /* ZByteView.swift in Sources */,
+				0A60E5ED28516703005D7A4D /* ZbyteSDK.docc in Sources */,
+				0A60E5F52851672A005D7A4D /* ZbyteView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,7 +322,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0A60E5E228516703005D7A4D /* Build configuration list for PBXProject "ZByteSDK" */ = {
+		0A60E5E228516703005D7A4D /* Build configuration list for PBXProject "ZbyteSDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A60E5EF28516703005D7A4D /* Debug */,
@@ -331,7 +331,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0A60E5F128516703005D7A4D /* Build configuration list for PBXNativeTarget "ZByteSDK" */ = {
+		0A60E5F128516703005D7A4D /* Build configuration list for PBXNativeTarget "ZbyteSDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A60E5F228516703005D7A4D /* Debug */,

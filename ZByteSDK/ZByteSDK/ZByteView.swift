@@ -1,6 +1,6 @@
 //
-//  ZByteView.swift
-//  ZByteSDK
+//  ZbyteView.swift
+//  ZbyteSDK
 //
 //  Created by Hardik Mehta on 09/06/22.
 //
@@ -11,7 +11,7 @@ import WebKit
 import UserNotifications
 
 
-public class ZByteSDKManager:NSObject
+public class ZbyteSDKManager:NSObject
 {
     public static var isProducion = true;
     static var dLSurveyId = ""
@@ -42,7 +42,7 @@ public class ZByteSDKManager:NSObject
 }
 
 //configuration class
-fileprivate class ZByteViewConfiguration
+fileprivate class ZbyteViewConfiguration
 {
     static let userAgent = "Version/8.0.2 Safari/600.2.5"
     static let WEB_URL_PROD="https://app.zbyte.io/"
@@ -53,25 +53,25 @@ fileprivate class ZByteViewConfiguration
     
     static var urlStr:String {
         get {
-            if(ZByteSDKManager.isProducion==false)
+            if(ZbyteSDKManager.isProducion==false)
             {
-                return ZByteViewConfiguration.WEB_URL_TEST
+                return ZbyteViewConfiguration.WEB_URL_TEST
             }
             else
             {
-                return ZByteViewConfiguration.WEB_URL_PROD
+                return ZbyteViewConfiguration.WEB_URL_PROD
             }
         }
     }
     static var apiUrlStr:String {
         get {
-            if(ZByteSDKManager.isProducion==false)
+            if(ZbyteSDKManager.isProducion==false)
             {
-                return ZByteViewConfiguration.API_URL_TEST
+                return ZbyteViewConfiguration.API_URL_TEST
             }
             else
             {
-                return ZByteViewConfiguration.API_URL_PROD
+                return ZbyteViewConfiguration.API_URL_PROD
             }
         }
         
@@ -80,7 +80,7 @@ fileprivate class ZByteViewConfiguration
 
 
 //Custom loader view
-fileprivate class ZByteLoaderView:UIView
+fileprivate class ZbyteLoaderView:UIView
 {
     let activityView:UIActivityIndicatorView = UIActivityIndicatorView()
     
@@ -118,8 +118,8 @@ fileprivate class ZByteLoaderView:UIView
 
 }
 
-//ZByteView Protocols
-public protocol ZByteViewDelegate {
+//ZbyteView Protocols
+public protocol ZbyteViewDelegate {
     
     func onUserInfoReceived(data: String)
 //    optional func onAccessTokenReceived(token:String)
@@ -127,14 +127,14 @@ public protocol ZByteViewDelegate {
 }
 
 
-//ZByteView Custom class
-public class ZByteView:UIView,WKNavigationDelegate
+//ZbyteView Custom class
+public class ZbyteView:UIView,WKNavigationDelegate
 {
     private var webview:WKWebView = WKWebView();
-    private var loaderView:ZByteLoaderView = ZByteLoaderView()
+    private var loaderView:ZbyteLoaderView = ZbyteLoaderView()
     private var userId:String? = nil;
     private var accessToken:String? = nil;
-    public var delegate:ZByteViewDelegate? = nil;
+    public var delegate:ZbyteViewDelegate? = nil;
     
     //initialising
     override init(frame: CGRect) {
@@ -153,7 +153,7 @@ public class ZByteView:UIView,WKNavigationDelegate
     {
         //setting up configuration for webview
         let webConfiguration = WKWebViewConfiguration()
-        webConfiguration.applicationNameForUserAgent = ZByteViewConfiguration.userAgent
+        webConfiguration.applicationNameForUserAgent = ZbyteViewConfiguration.userAgent
         
         //setting up webview
         webview = WKWebView(frame: .zero, configuration: webConfiguration)
@@ -191,7 +191,7 @@ public class ZByteView:UIView,WKNavigationDelegate
         loaderView.showLoader();
         
         //Perform request
-        loadURLRequestWithURL(url: URL(string: ZByteViewConfiguration.urlStr)!)
+        loadURLRequestWithURL(url: URL(string: ZbyteViewConfiguration.urlStr)!)
         
     }
     private func loadURLRequestWithURL(url:URL)
@@ -238,14 +238,14 @@ public class ZByteView:UIView,WKNavigationDelegate
                                         self.fetchToken();
                                         self.userId = "\(userIdReceived)";
                                         
-                                        if(ZByteSDKManager.dLNftId != "" && ZByteSDKManager.dLSurveyId != "")
+                                        if(ZbyteSDKManager.dLNftId != "" && ZbyteSDKManager.dLSurveyId != "")
                                         {
                                             
-                                            let urlStr = "\(ZByteViewConfiguration.urlStr)/mynft?nft_id=\(ZByteSDKManager.dLNftId)&survey_id=\(ZByteSDKManager.dLSurveyId)";
+                                            let urlStr = "\(ZbyteViewConfiguration.urlStr)/mynft?nft_id=\(ZbyteSDKManager.dLNftId)&survey_id=\(ZbyteSDKManager.dLSurveyId)";
                                             self.loadURLRequestWithURL(url: URL(string: urlStr)!)
                                             
-                                            ZByteSDKManager.dLNftId = ""
-                                            ZByteSDKManager.dLSurveyId = ""
+                                            ZbyteSDKManager.dLNftId = ""
+                                            ZbyteSDKManager.dLSurveyId = ""
                                             
                                             return;
                                         }
@@ -333,7 +333,7 @@ public class ZByteView:UIView,WKNavigationDelegate
     
     func callAPI(completion: @escaping (_ status:Bool,_ result: NSDictionary?, _ errorString:String?) -> Void)
     {
-        let mainURL = "\(ZByteViewConfiguration.apiUrlStr)getUserProfile";
+        let mainURL = "\(ZbyteViewConfiguration.apiUrlStr)getUserProfile";
         
         let session = URLSession.shared
         let url = URL(string: mainURL)!
@@ -422,12 +422,12 @@ extension WKWebView {
     }
 }
 
-extension ZByteView {
+extension ZbyteView {
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         
         
-        webView.loadDiskCookies(for: URL(string: ZByteViewConfiguration.urlStr)!.host!){
+        webView.loadDiskCookies(for: URL(string: ZbyteViewConfiguration.urlStr)!.host!){
         }
         
         if navigationAction.targetFrame == nil, let url = navigationAction.request.url {
@@ -441,7 +441,7 @@ extension ZByteView {
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
         //write cookie for current domain
-        webView.writeDiskCookies(for: URL(string: ZByteViewConfiguration.urlStr)!.host!){
+        webView.writeDiskCookies(for: URL(string: ZbyteViewConfiguration.urlStr)!.host!){
             decisionHandler(.allow)
         }
     }
