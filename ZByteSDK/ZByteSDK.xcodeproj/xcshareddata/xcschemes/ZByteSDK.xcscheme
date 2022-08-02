@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0A60E5E728516703005D7A4D"
                BuildableName = "ZByteSDK.framework"
-               BlueprintName = "ZByteSDK"
+               BlueprintName = "ZbyteSDK"
                ReferencedContainer = "container:ZByteSDK.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -52,7 +52,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0A60E5E728516703005D7A4D"
             BuildableName = "ZByteSDK.framework"
-            BlueprintName = "ZByteSDK"
+            BlueprintName = "ZbyteSDK"
             ReferencedContainer = "container:ZByteSDK.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -74,7 +74,7 @@
                      BuildableIdentifier = "primary"
                      BlueprintIdentifier = "0A60E5E728516703005D7A4D"
                      BuildableName = "ZByteSDK.framework"
-                     BlueprintName = "ZByteSDK"
+                     BlueprintName = "ZbyteSDK"
                      ReferencedContainer = "container:ZByteSDK.xcodeproj">
                   </BuildableReference>
                </EnvironmentBuildable>
