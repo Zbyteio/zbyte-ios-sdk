@@ -13,7 +13,6 @@ import UserNotifications
 
 public class ZbyteSDKManager:NSObject
 {
-    public static var isProducion = true;
     static var dLSurveyId = ""
     static var dLNftId = ""
     
@@ -39,6 +38,38 @@ public class ZbyteSDKManager:NSObject
            print("DEBUG : Payload received");
            print("DEBUG : nftId=\(nftId),surveyID=\(surveyID)");
     }
+    public static func setWebViewBaseURL(urlStr:String)
+    {
+        UserDefaults.standard.setValue(urlStr, forKey: "zbyte_webBaseUrl");
+        UserDefaults.standard.synchronize();
+    }
+    public static func setAPIBaseURL(urlStr:String)
+    {
+        UserDefaults.standard.setValue(urlStr, forKey: "zbyte_apiBaseUrl");
+        UserDefaults.standard.synchronize();
+    }
+    public static func getWebViewBaseURL()->String
+    {
+        if let urlStr = UserDefaults.standard.value(forKey: "zbyte_webBaseUrl") as? String
+        {
+            return urlStr;
+        }
+        else
+        {
+            return ZbyteViewConfiguration.WEB_URL_TEST
+        }
+    }
+    public static func getAPIBaseURL()->String
+    {
+        if let urlStr = UserDefaults.standard.value(forKey: "zbyte_apiBaseUrl") as? String
+        {
+            return urlStr;
+        }
+        else
+        {
+            return ZbyteViewConfiguration.API_URL_TEST
+        }
+    }
 }
 
 //configuration class
@@ -53,26 +84,12 @@ fileprivate class ZbyteViewConfiguration
     
     static var urlStr:String {
         get {
-            if(ZbyteSDKManager.isProducion==false)
-            {
-                return ZbyteViewConfiguration.WEB_URL_TEST
-            }
-            else
-            {
-                return ZbyteViewConfiguration.WEB_URL_PROD
-            }
+            return ZbyteSDKManager.getWebViewBaseURL();
         }
     }
     static var apiUrlStr:String {
         get {
-            if(ZbyteSDKManager.isProducion==false)
-            {
-                return ZbyteViewConfiguration.API_URL_TEST
-            }
-            else
-            {
-                return ZbyteViewConfiguration.API_URL_PROD
-            }
+            return ZbyteSDKManager.getAPIBaseURL();
         }
         
     }
@@ -212,7 +229,7 @@ public class ZbyteView:UIView,WKNavigationDelegate
         {
             let urlStr = url.absoluteString
             
-            if(urlStr == "https://apptest.zbyte.io/mynft")
+            if(urlStr == "\(ZbyteViewConfiguration.urlStr)/mynft")
             {
                 
                 print("url -> \(urlStr)")
@@ -235,7 +252,7 @@ public class ZbyteView:UIView,WKNavigationDelegate
                                 {
                                     if let userIdReceived = loginnOptions.value(forKey: "id") as? Int64
                                     {
-                                        self.fetchToken();
+                                      //  self.fetchToken();
                                         self.userId = "\(userIdReceived)";
                                         
                                         if(ZbyteSDKManager.dLNftId != "" && ZbyteSDKManager.dLSurveyId != "")
