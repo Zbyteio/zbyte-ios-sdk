@@ -77,9 +77,9 @@ fileprivate class ZbyteViewConfiguration
 {
     static let userAgent = "Version/8.0.2 Safari/600.2.5"
     static let WEB_URL_PROD="https://app.zbyte.io/"
-    static let WEB_URL_TEST="https://apptest.zbyte.io/"
+    static let WEB_URL_TEST="https://appdev.zbyte.io/"
     static let API_URL_PROD="https://auth.zbyte.io/"
-    static let API_URL_TEST="https://authtest.zbyte.io/"
+    static let API_URL_TEST="https://authdev.zbyte.io/"
     
     
     static var urlStr:String {
@@ -229,7 +229,7 @@ public class ZbyteView:UIView,WKNavigationDelegate
         {
             let urlStr = url.absoluteString
             
-            if(urlStr == "\(ZbyteViewConfiguration.urlStr)/mynft")
+            if(urlStr == "\(ZbyteViewConfiguration.urlStr)mynft")
             {
                 
                 print("url -> \(urlStr)")
@@ -254,6 +254,7 @@ public class ZbyteView:UIView,WKNavigationDelegate
                                     {
                                       //  self.fetchToken();
                                         self.userId = "\(userIdReceived)";
+                                        self.onUserIdReceived();
                                         
                                         if(ZbyteSDKManager.dLNftId != "" && ZbyteSDKManager.dLSurveyId != "")
                                         {
@@ -286,6 +287,10 @@ public class ZbyteView:UIView,WKNavigationDelegate
         {
             self.perform(#selector(fetchUserId), with: nil, afterDelay: 1.0);
         }
+    }
+    func onUserIdReceived()
+    {
+        self.delegate?.onUserInfoReceived(data: self.userId!);
     }
     func fetchToken()
     {
