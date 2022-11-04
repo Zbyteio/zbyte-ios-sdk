@@ -70,6 +70,14 @@ public class ZbyteSDKManager:NSObject
             return ZbyteViewConfiguration.API_URL_TEST
         }
     }
+    public static func getFirebaseDocumentName()->String
+    {
+        let webURL = self.getWebViewBaseURL();
+        
+        var envinorStr = webURL.slice(from: "//", to: ".");
+        envinorStr = "user_\(envinorStr!)";
+        return envinorStr!;
+    }
 }
 
 //configuration class
@@ -539,4 +547,11 @@ extension String {
         guard let data = self.data(using: .utf8, allowLossyConversion: false) else { return nil }
         return try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
     }
+    func slice(from: String, to: String) -> String? {
+           return (range(of: from)?.upperBound).flatMap { substringFrom in
+               (range(of: to, range: substringFrom..<endIndex)?.lowerBound).map { substringTo in
+                   String(self[substringFrom..<substringTo])
+               }
+           }
+       }
 }
