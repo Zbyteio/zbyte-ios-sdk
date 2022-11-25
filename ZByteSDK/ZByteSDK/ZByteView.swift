@@ -13,7 +13,6 @@ import UserNotifications
 
 public class ZbyteSDKManager:NSObject
 {
-    public static var isProducion = true;
     static var dLSurveyId = ""
     static var dLNftId = ""
     
@@ -39,6 +38,35 @@ public class ZbyteSDKManager:NSObject
            print("DEBUG : Payload received");
            print("DEBUG : nftId=\(nftId),surveyID=\(surveyID)");
     }
+    public static func setWebViewBaseURL(urlStr:String)
+    {
+        UserDefaults.standard.setValue(urlStr, forKey: "zbyte_webBaseUrl");
+        UserDefaults.standard.synchronize();
+    }
+    public static func setAPIBaseURL(urlStr:String)
+    {
+        UserDefaults.standard.setValue(urlStr, forKey: "zbyte_apiBaseUrl");
+        UserDefaults.standard.synchronize();
+    }
+    public static func getWebViewBaseURL()->String
+    {
+        if let urlStr = UserDefaults.standard.value(forKey: "zbyte_webBaseUrl") as? String
+        {
+            return urlStr;
+        }
+        else
+        {
+            return ZbyteViewConfiguration.WEB_URL_TEST
+        }
+    }
+    public static func getFirebaseDocumentName()->String
+    {
+        let webURL = self.getWebViewBaseURL();
+        
+        var envinorStr = webURL.slice(from: "//", to: ".");
+        envinorStr = "user_\(envinorStr!)";
+        return envinorStr!;
+    }
 }
 
 //configuration class
@@ -46,35 +74,13 @@ fileprivate class ZbyteViewConfiguration
 {
     static let userAgent = "Version/8.0.2 Safari/600.2.5"
     static let WEB_URL_PROD="https://app.zbyte.io/"
-    static let WEB_URL_TEST="https://apptest.zbyte.io/"
-    static let API_URL_PROD="https://auth.zbyte.io/"
-    static let API_URL_TEST="https://authtest.zbyte.io/"
+    static let WEB_URL_TEST="https://appdev.zbyte.io/"
     
     
     static var urlStr:String {
         get {
-            if(ZbyteSDKManager.isProducion==false)
-            {
-                return ZbyteViewConfiguration.WEB_URL_TEST
-            }
-            else
-            {
-                return ZbyteViewConfiguration.WEB_URL_PROD
-            }
+            return ZbyteSDKManager.getWebViewBaseURL();
         }
-    }
-    static var apiUrlStr:String {
-        get {
-            if(ZbyteSDKManager.isProducion==false)
-            {
-                return ZbyteViewConfiguration.API_URL_TEST
-            }
-            else
-            {
-                return ZbyteViewConfiguration.API_URL_PROD
-            }
-        }
-        
     }
 }
 
@@ -128,7 +134,7 @@ public protocol ZbyteViewDelegate {
 
 
 //ZbyteView Custom class
-public class ZbyteView:UIView,WKNavigationDelegate
+public class ZbyteView:UIView, WKNavigationDelegate, WKUIDelegate
 {
     private var webview:WKWebView = WKWebView();
     private var loaderView:ZbyteLoaderView = ZbyteLoaderView()
@@ -158,6 +164,7 @@ public class ZbyteView:UIView,WKNavigationDelegate
         //setting up webview
         webview = WKWebView(frame: .zero, configuration: webConfiguration)
         webview.navigationDelegate = self;
+        webview.uiDelegate = self;
         webview.backgroundColor = .clear
         self.addSubview(webview);
         
@@ -212,7 +219,7 @@ public class ZbyteView:UIView,WKNavigationDelegate
         {
             let urlStr = url.absoluteString
             
-            if(urlStr == "https://apptest.zbyte.io/mynft")
+            if(urlStr == "\(ZbyteViewConfiguration.urlStr)mynft")
             {
                 
                 print("url -> \(urlStr)")
@@ -235,8 +242,8 @@ public class ZbyteView:UIView,WKNavigationDelegate
                                 {
                                     if let userIdReceived = loginnOptions.value(forKey: "id") as? Int64
                                     {
-                                        self.fetchToken();
                                         self.userId = "\(userIdReceived)";
+                                        self.onUserIdReceived();
                                         
                                         if(ZbyteSDKManager.dLNftId != "" && ZbyteSDKManager.dLSurveyId != "")
                                         {
@@ -270,127 +277,12 @@ public class ZbyteView:UIView,WKNavigationDelegate
             self.perform(#selector(fetchUserId), with: nil, afterDelay: 1.0);
         }
     }
-    func fetchToken()
+    func onUserIdReceived()
     {
-        if(self.accessToken == nil)
-        {
-            webview.getCookies(for: webview.url!.host) { data in
-                
-                print("=========================================")
-                print("\(self.webview.url!.absoluteString)")
-                print(data)
-                
-                if let tokenDict = data["accessToken"] as? NSDictionary
-                {
-                    if let value = tokenDict["Value"] as? String
-                    {
-                        self.accessToken = value;
-                        print("Token = \(value)");
-                        self.requestForEmailAddress();
-                    }
-                    
-                }
-                
-            }
-        }
-        
-        
-        
-        
+        self.delegate?.onUserInfoReceived(data: self.userId!);
     }
-    func requestForEmailAddress()
-    {
-        if(self.accessToken != nil && self.userId != nil)
-        {
-            
-            self.callAPI { status, result, errorString in
-                
-                if(status == true)
-                {
-                    if let resultRec = result
-                    {
-                        if let dataDict = resultRec["data"] as? NSDictionary
-                        {
-                            if let email = dataDict["email"] as? String
-                            {
-                                DispatchQueue.main.async {
-                                    
-                                    self.delegate?.onUserInfoReceived(data: email);
-                                    
-                                }
-                                
-                            }
-                        }
-                    }
-                    
-                }
-                print("\(result)");
-            }
-            
-        }
-    }
+   
     
-    
-    func callAPI(completion: @escaping (_ status:Bool,_ result: NSDictionary?, _ errorString:String?) -> Void)
-    {
-        let mainURL = "\(ZbyteViewConfiguration.apiUrlStr)getUserProfile";
-        
-        let session = URLSession.shared
-        let url = URL(string: mainURL)!
-        print("callinng result");
-        
-        var request = URLRequest(url: url);
-        request.httpMethod = "POST";
-        
-        let parameters = "{\n    \"userId\": \(self.userId!)\n}"
-        let postData = parameters.data(using: .utf8)
-        
-        request.addValue("Bearer \(self.accessToken!)", forHTTPHeaderField: "Authorization")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        request.httpBody = postData
-        
-        
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            
-            print("Got result");
-            if error != nil || data == nil {
-                print("Client error!")
-                completion(false,nil,"Client Error");
-                return
-            }
-            
-            //                guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
-            //                    print("Server error!")
-            //                    completion(false,nil,"Server error!")
-            //
-            //                    return
-            //                }
-            
-            //            guard let mime = response.mimeType, mime == "application/json" else {
-            //                print("Wrong MIME type!")
-            //                completion(false,nil)
-            //
-            //                return
-            //            }
-            
-            do {
-                let json = try JSONSerialization.jsonObject(with: data!, options: []) as! NSDictionary
-                
-                print("\(json)");
-                
-                completion(true,json,nil)
-                
-            } catch {
-                completion(false,nil,"Parse error!")
-                
-                print("JSON error: (error.localizedDescription)")
-            }
-        }
-        
-        task.resume()
-    }
     
     //web url request finish fail
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
@@ -445,6 +337,16 @@ extension ZbyteView {
             decisionHandler(.allow)
         }
     }
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        
+        if navigationAction.targetFrame == nil {
+            webView.load(navigationAction.request)
+            loaderView.showLoader()
+        }
+        return nil
+        
+    }
+    
 }
 
 extension WKWebView {
@@ -517,4 +419,11 @@ extension String {
         guard let data = self.data(using: .utf8, allowLossyConversion: false) else { return nil }
         return try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
     }
+    func slice(from: String, to: String) -> String? {
+           return (range(of: from)?.upperBound).flatMap { substringFrom in
+               (range(of: to, range: substringFrom..<endIndex)?.lowerBound).map { substringTo in
+                   String(self[substringFrom..<substringTo])
+               }
+           }
+       }
 }
