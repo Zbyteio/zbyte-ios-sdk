@@ -153,7 +153,7 @@ public protocol ZbyteViewDelegate {
 
 
 //ZbyteView Custom class
-public class ZbyteView:UIView,WKNavigationDelegate
+public class ZbyteView:UIView, WKNavigationDelegate, WKUIDelegate
 {
     private var webview:WKWebView = WKWebView();
     private var loaderView:ZbyteLoaderView = ZbyteLoaderView()
@@ -183,6 +183,7 @@ public class ZbyteView:UIView,WKNavigationDelegate
         //setting up webview
         webview = WKWebView(frame: .zero, configuration: webConfiguration)
         webview.navigationDelegate = self;
+        webview.uiDelegate = self;
         webview.backgroundColor = .clear
         self.addSubview(webview);
         
@@ -475,6 +476,16 @@ extension ZbyteView {
             decisionHandler(.allow)
         }
     }
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        
+        if navigationAction.targetFrame == nil {
+            webView.load(navigationAction.request)
+            loaderView.showLoader()
+        }
+        return nil
+        
+    }
+    
 }
 
 extension WKWebView {
