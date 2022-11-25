@@ -59,17 +59,6 @@ public class ZbyteSDKManager:NSObject
             return ZbyteViewConfiguration.WEB_URL_TEST
         }
     }
-    public static func getAPIBaseURL()->String
-    {
-        if let urlStr = UserDefaults.standard.value(forKey: "zbyte_apiBaseUrl") as? String
-        {
-            return urlStr;
-        }
-        else
-        {
-            return ZbyteViewConfiguration.API_URL_TEST
-        }
-    }
     public static func getFirebaseDocumentName()->String
     {
         let webURL = self.getWebViewBaseURL();
@@ -86,20 +75,12 @@ fileprivate class ZbyteViewConfiguration
     static let userAgent = "Version/8.0.2 Safari/600.2.5"
     static let WEB_URL_PROD="https://app.zbyte.io/"
     static let WEB_URL_TEST="https://appdev.zbyte.io/"
-    static let API_URL_PROD="https://auth.zbyte.io/"
-    static let API_URL_TEST="https://authdev.zbyte.io/"
     
     
     static var urlStr:String {
         get {
             return ZbyteSDKManager.getWebViewBaseURL();
         }
-    }
-    static var apiUrlStr:String {
-        get {
-            return ZbyteSDKManager.getAPIBaseURL();
-        }
-        
     }
 }
 
@@ -261,7 +242,6 @@ public class ZbyteView:UIView, WKNavigationDelegate, WKUIDelegate
                                 {
                                     if let userIdReceived = loginnOptions.value(forKey: "id") as? Int64
                                     {
-                                      //  self.fetchToken();
                                         self.userId = "\(userIdReceived)";
                                         self.onUserIdReceived();
                                         
@@ -301,127 +281,8 @@ public class ZbyteView:UIView, WKNavigationDelegate, WKUIDelegate
     {
         self.delegate?.onUserInfoReceived(data: self.userId!);
     }
-    func fetchToken()
-    {
-        if(self.accessToken == nil)
-        {
-            webview.getCookies(for: webview.url!.host) { data in
-                
-                print("=========================================")
-                print("\(self.webview.url!.absoluteString)")
-                print(data)
-                
-                if let tokenDict = data["accessToken"] as? NSDictionary
-                {
-                    if let value = tokenDict["Value"] as? String
-                    {
-                        self.accessToken = value;
-                        print("Token = \(value)");
-                        self.requestForEmailAddress();
-                    }
-                    
-                }
-                
-            }
-        }
-        
-        
-        
-        
-    }
-    func requestForEmailAddress()
-    {
-        if(self.accessToken != nil && self.userId != nil)
-        {
-            
-            self.callAPI { status, result, errorString in
-                
-                if(status == true)
-                {
-                    if let resultRec = result
-                    {
-                        if let dataDict = resultRec["data"] as? NSDictionary
-                        {
-                            if let email = dataDict["email"] as? String
-                            {
-                                DispatchQueue.main.async {
-                                    
-                                    self.delegate?.onUserInfoReceived(data: email);
-                                    
-                                }
-                                
-                            }
-                        }
-                    }
-                    
-                }
-                print("\(result)");
-            }
-            
-        }
-    }
+   
     
-    
-    func callAPI(completion: @escaping (_ status:Bool,_ result: NSDictionary?, _ errorString:String?) -> Void)
-    {
-        let mainURL = "\(ZbyteViewConfiguration.apiUrlStr)getUserProfile";
-        
-        let session = URLSession.shared
-        let url = URL(string: mainURL)!
-        print("callinng result");
-        
-        var request = URLRequest(url: url);
-        request.httpMethod = "POST";
-        
-        let parameters = "{\n    \"userId\": \(self.userId!)\n}"
-        let postData = parameters.data(using: .utf8)
-        
-        request.addValue("Bearer \(self.accessToken!)", forHTTPHeaderField: "Authorization")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        request.httpBody = postData
-        
-        
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            
-            print("Got result");
-            if error != nil || data == nil {
-                print("Client error!")
-                completion(false,nil,"Client Error");
-                return
-            }
-            
-            //                guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
-            //                    print("Server error!")
-            //                    completion(false,nil,"Server error!")
-            //
-            //                    return
-            //                }
-            
-            //            guard let mime = response.mimeType, mime == "application/json" else {
-            //                print("Wrong MIME type!")
-            //                completion(false,nil)
-            //
-            //                return
-            //            }
-            
-            do {
-                let json = try JSONSerialization.jsonObject(with: data!, options: []) as! NSDictionary
-                
-                print("\(json)");
-                
-                completion(true,json,nil)
-                
-            } catch {
-                completion(false,nil,"Parse error!")
-                
-                print("JSON error: (error.localizedDescription)")
-            }
-        }
-        
-        task.resume()
-    }
     
     //web url request finish fail
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
